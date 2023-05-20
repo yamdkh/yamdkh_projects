@@ -1,7 +1,13 @@
-
-import 'package:yamdkh_projects/api.dart';
+import '../util/logger.dart';
 
 void main() {
-  print(API.getUserFromMoon().name);
-  print(API.getUserFromSun().name);
+
+
+  AppLogger.initLogger();
+  AppLogger.logEvent("User login");
+  AppLogger.logEvent("Crash When User try login");
+  AppLogger.logEvent("App Killed");
+  AppLogger.closeLogger();
+
+
 }
