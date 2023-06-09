@@ -1,56 +1,23 @@
-abstract class Drink {
-  String content();
-  int sugarLevel();
-  bool hotWater();
-}
-
-class TeaBoy<T extends Drink> {
-  void _addContentToGlass(T t) {
-    print("Drink Type: ${t.content()}");
-  }
-  void _isHotWater(T t) {
-    print("isHotWater: ${t.hotWater()}");
-  }
-  void _addSugarLevel(T t) {
-    print("SugarLevel: ${t.sugarLevel()}");
-  }
-  void make(T t) {
-    _addContentToGlass(t);
-    _isHotWater(t);
-    _addSugarLevel(t);
-
-    print("---------------\n");
-  }
-}
-
-
-
- class Coffee extends Drink {
-   @override
-   String content() => "Arabic Coffee";
-   @override
-   bool hotWater() => true;
-   @override
-   int sugarLevel() => 3;
- }
-
- class Tea extends Drink {
-   @override
-   String content() => "Tea";
-   @override
-   bool hotWater() => true;
-   @override
-   int sugarLevel() => 9;
- }
-
-
-
+import '../util/api_keys.dart';
+import 'package:encrypt/encrypt.dart';
 
 void main() {
-  final teaBoy = TeaBoy<Drink>();
-  final coffee = Coffee();
-  final tea = Tea();
+  // APIKeys.getKey();
 
-  teaBoy.make(coffee);
-  teaBoy.make(tea);
+  final plainText = 'THIS IS FAKE API KEY FROM ENV';
+
+  final key = Key.fromLength(16);
+  final iv = IV.fromLength(16);
+  final encrypter = Encrypter(AES(key));
+
+  final encrypted = encrypter.encrypt(plainText, iv: iv);
+
+  final decrypted = encrypter.decrypt(encrypted, iv: iv);
+
+  print(decrypted);
+  print(encrypted.bytes);
+  print(encrypted.base16);
+  print(encrypted.base64);
+
+  print(encrypter.decrypt64("MqECh8/DfxvODbEc6nV7Z3ipuZfaOGIue19YGfLkRlk=",iv: iv));
 }
