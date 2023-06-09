@@ -2,22 +2,86 @@ import '../util/api_keys.dart';
 import 'package:encrypt/encrypt.dart';
 
 void main() {
-  // APIKeys.getKey();
 
-  final plainText = 'THIS IS FAKE API KEY FROM ENV';
+  // this will maintain all loans information
+  Newspaper printMedia =  Newspaper();
+  Internet onlineMedia =  Internet();
 
-  final key = Key.fromLength(16);
-  final iv = IV.fromLength(16);
-  final encrypter = Encrypter(AES(key));
+  Loan personalLoan =  Loan("Personal Loan", 12, "Standard Charterd");
 
-  final encrypted = encrypter.encrypt(plainText, iv: iv);
+  personalLoan.registerObserver(printMedia);
+  personalLoan.registerObserver(onlineMedia);
+  personalLoan.setInterest(10);
 
-  final decrypted = encrypter.decrypt(encrypted, iv: iv);
 
-  print(decrypted);
-  print(encrypted.bytes);
-  print(encrypted.base16);
-  print(encrypted.base64);
+}
 
-  print(encrypter.decrypt64("MqECh8/DfxvODbEc6nV7Z3ipuZfaOGIue19YGfLkRlk=",iv: iv));
+abstract class Observer {
+  void update(int interest);
+}
+
+abstract class Subject {
+  void registerObserver(Observer observer);
+
+  void removeObserver(Observer observer);
+
+  void notifyObservers();
+}
+
+class Loan implements Subject {
+  List<Observer> observers = <Observer>[];
+  String type;
+  int interest;
+  String bank;
+
+  Loan(this.type, this.interest, this.bank);
+
+  getInterest() {
+    return interest;
+  }
+
+  void setInterest(int interest) {
+    this.interest = interest;
+    notifyObservers();
+  }
+
+  getBank() {
+    return bank;
+  }
+
+  getType() {
+    return type;
+  }
+
+  @override
+  void registerObserver(Observer observer) {
+    observers.add(observer);
+  }
+
+  @override
+  void removeObserver(Observer observer) {
+    observers.remove(observer);
+  }
+
+  @override
+  void notifyObservers() {
+    for (Observer ob in observers) {
+      print("Notifying Observers on change in Loan interest rate");
+      ob.update(interest);
+    }
+  }
+}
+
+class Newspaper implements Observer {
+  @override
+  void update(int interest) {
+    print("Newspaper: Interest Rate updated, new Rate is:$interest");
+  }
+}
+
+class Internet implements Observer {
+  @override
+  void update(int interest) {
+    print("Internet: Interest Rate updated, new Rate is: $interest");
+  }
 }
